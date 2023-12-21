@@ -1,10 +1,12 @@
+import React, { useState, useEffect } from "react";
 import "./App.css";
-import { useState, useEffect } from "react";
 import cartIcon from "./assets/icons-cart.png";
 
 function App() {
   const [menuData, setMenuData] = useState([]);
   const [quantities, setQuantities] = useState({});
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [totalQuantity, setTotalQuantity] = useState(0);
 
   useEffect(() => {
     // Fetch data from the API
@@ -12,15 +14,23 @@ function App() {
       .then((response) => response.json())
       .then((data) => {
         setMenuData(data);
-        // Initialize quantities state with default values (0) for each item
         const initialQuantities = {};
         data.data[0].table_menu_list[0].category_dishes.forEach(
           (item) => (initialQuantities[item.dish_id] = 0)
         );
         setQuantities(initialQuantities);
+        setSelectedCategory(data.data[0].table_menu_list[0]);
       })
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
+
+  useEffect(() => {
+    const total = Object.values(quantities).reduce(
+      (acc, quantity) => acc + quantity,
+      0
+    );
+    setTotalQuantity(total);
+  }, [quantities]);
 
   const increment = (dishId) => {
     setQuantities((prevQuantities) => ({
@@ -38,54 +48,88 @@ function App() {
     }
   };
 
-  console.log(menuData, "menuData");
+  const handleCategoryClick = (category) => {
+    setSelectedCategory(category);
+    const initialQuantities = {};
+    category.category_dishes.forEach(
+      (item) =>
+        (initialQuantities[item.dish_id] = quantities[item.dish_id] || 0)
+    );
+    setQuantities(initialQuantities);
+  };
 
   return (
-    <body>
+    <div>
       <header>
-        <h1>{menuData?.data?.[0]?.restaurant_name || "Cafe Name"}</h1>
+        <h1>{menuData?.data?.[0]?.restaurant_name || "UNI Resto Cafe"}</h1>
         <div className="headerItems">
           <span>My Orders</span>
-          <img src={cartIcon} alt="cart" />
+          <div className="cart-container">
+            <img src={cartIcon} alt="cart" />
+            {totalQuantity > 0 && (
+              <div className="counter">{totalQuantity}</div>
+            )}
+          </div>
         </div>
       </header>
 
       <nav className="horizontal-scroll">
-        {menuData?.data?.[0]?.table_menu_list?.map((item, index) => (
-          <a key={index} href="##">
-            {item.menu_category}
+        {menuData?.data?.[0]?.table_menu_list?.map((category, index) => (
+          <a
+            key={index}
+            href="##"
+            onClick={() => handleCategoryClick(category)}
+            className={`category-item ${
+              selectedCategory === category ? "active selected" : ""
+            }`}
+          >
+            {category.menu_category}
           </a>
         ))}
       </nav>
 
-      {menuData?.data?.[0]?.table_menu_list?.[0]?.category_dishes?.map(
-        (item, index) => (
-          <div key={index} className="menu-item">
-            <div>
-              <h2>{item.dish_name}</h2>
-              <p>
+      {selectedCategory?.category_dishes?.map((item, index) => (
+        <div key={index} className="menu-item">
+          <div style={{ width: "1000px" }}>
+            <h2>{item.dish_name}</h2>
+            <p>
+              <strong>
                 {item.dish_currency} {item.dish_price}
-              </p>
-              <p>{item.dish_description}</p>
+              </strong>
+            </p>
+            <p>{item.dish_description}</p>
+            {item.dish_Availability && (
               <div className="counter-container">
                 <button onClick={() => decrement(item.dish_id)}>-</button>
                 <p>{quantities[item.dish_id]}</p>
                 <button onClick={() => increment(item.dish_id)}>+</button>
               </div>
-              <p
-                className={
-                  item.dish_Availability ? "item-available" : "item-unavailable"
-                }
-                style={{ color: item.dish_Availability ? "green" : "red" }}
-              >
-                {item.dish_Availability ? "Available" : "Not Available"}
-              </p>
-            </div>
+            )}
+            <p
+              className={
+                item.addonCat.length > 0 && item.dish_Availability
+                  ? "item-available"
+                  : "item-unavailable"
+              }
+              style={{
+                color:
+                  item.addonCat.length > 0 && item.dish_Availability
+                    ? "green"
+                    : "red",
+              }}
+            >
+              {item.addonCat.length > 0 && item.dish_Availability
+                ? "Customizations available"
+                : "Not Available"}
+            </p>
+          </div>
+          <div style={{ display: "flex" }}>
+            <p className="calories">{item.dish_calories} Calories</p>
             <img src={item.dish_image} alt={item.dish_name} />
           </div>
-        )
-      )}
-    </body>
+        </div>
+      ))}
+    </div>
   );
 }
 

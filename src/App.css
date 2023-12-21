@@ -13,12 +13,16 @@ header {
   justify-content: space-between;
   align-items: center;
 }
+h1 {
+  color: rgb(80, 79, 79);
+}
 
 nav {
   background-color: #ffffff;
   display: flex;
   justify-content: space-around;
   padding: 10px 0;
+  margin-left: 0px;
 }
 
 nav.horizontal-scroll {
@@ -27,6 +31,7 @@ nav.horizontal-scroll {
   background-color: #ffffff;
   padding: 8px 0;
   border-bottom: 2px solid #333;
+  cursor: pointer;
 }
 
 nav.horizontal-scroll a {
@@ -34,7 +39,7 @@ nav.horizontal-scroll a {
   color: rgb(68, 68, 68);
   text-decoration: none;
   padding: 8px 12px;
-  margin-right: 10px;
+  margin-left: 170px;
   border-radius: 5px;
   transition: background-color 0.3s ease;
   font-weight: bold;
@@ -53,10 +58,12 @@ nav.horizontal-scroll::-webkit-scrollbar {
 nav.horizontal-scroll::-webkit-scrollbar-thumb {
   background-color: #ccc6c6;
   border-radius: 10px;
+  cursor: pointer;
 }
 
 nav.horizontal-scroll::-webkit-scrollbar-track {
   background-color: #fffbfb;
+  cursor: pointer;
 }
 
 .menu-item {
@@ -70,8 +77,8 @@ nav.horizontal-scroll::-webkit-scrollbar-track {
 }
 
 .menu-item img {
-  width: 80px;
-  height: 60px;
+  width: 90px;
+  height: 80px;
   object-fit: cover;
   margin-left: 20px;
   border-radius: 8px;
@@ -93,7 +100,7 @@ nav.horizontal-scroll::-webkit-scrollbar-track {
   height: 22px;
   border-radius: 12px;
   margin-top: 10px;
-  padding-left: 10px;
+  padding-left: 12px;
 }
 
 .counter-container button {
@@ -117,4 +124,30 @@ nav.horizontal-scroll::-webkit-scrollbar-track {
 
 .item-unavailable {
   color: red;
+}
+.category-item.selected {
+  color: red;
+}
+.calories {
+  margin-right: 170px;
+}
+
+.headerItems {
+  display: flex;
+  align-items: center;
+}
+
+.cart-container {
+  position: relative;
+}
+
+.counter {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 4px 8px;
+  font-size: 12px;
 }
